@@ -1,0 +1,33 @@
+{
+  "private": true,
+  "name": "facturlio",
+  "description": "description",
+  "keywords": [
+  ],
+  "version": "0.0.1",
+  "main": "index.js",
+  "files": [
+    "dummy"
+  ],
+  "homepage": "https://github.com/fatfisz/facturlio",
+  "repository": "https://github.com/fatfisz/facturlio.git",
+  "author": {
+    "name": "FatFisz",
+    "url": "https://github.com/fatfisz"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "scripts": {
+    "test": "babel index.js"
+  },
+  "dependencies": {
+    "babel-macros": "^1.2.0",
+    "babel-types": "^6.26.0",
+    "babylon": "^6.18.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0"
+  }
+}
