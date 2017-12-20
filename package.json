@@ -2,8 +2,7 @@
   "private": true,
   "name": "facturlio",
   "description": "description",
-  "keywords": [
-  ],
+  "keywords": [],
   "version": "0.0.1",
   "main": "index.js",
   "files": [
@@ -20,14 +19,16 @@
     "node": ">=8.0.0"
   },
   "scripts": {
-    "test": "babel index.js"
+    "test": "jest"
   },
   "dependencies": {
     "babel-macros": "^1.2.0",
     "babel-types": "^6.26.0",
-    "babylon": "^6.18.0"
+    "common-tags": "^1.5.1"
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0"
+    "babel-core": "^6.26.0",
+    "jest": "^22.0.3",
+    "strip-ansi": "^4.0.0"
   }
 }

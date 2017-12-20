@@ -1,32 +1,10 @@
 'use strict';
 
+const fs = require('fs');
+
 const { createMacro } = require('babel-macros');
 const types = require('babel-types');
-
-function getQuasiFromString(string) {
-  return types.templateElement({ raw: string });
-}
-
-const urls = [
-  {
-    name: 'sendgrid-event',
-    urlTemplate: 'sendgrid/event/',
-    quasis: ['sendgrid/event/'].map(getQuasiFromString),
-    params: [],
-  },
-  {
-    name: 'view_lesson_task',
-    urlTemplate: 'programmers/lessons/${number}-${slug}/${task_name}/',
-    quasis: ['programmers/lessons/', '-', '/', '/'].map(getQuasiFromString),
-    params: [
-      'number',
-      'slug',
-      'task_name',
-    ],
-  },
-];
-
-const urlMap = new Map(urls.map(info => [info.name, info]));
+const { commaLists, commaListsOr } = require('common-tags');
 
 function pathInvariant(path, predicate, message) {
   if (!predicate) {
@@ -34,7 +12,11 @@ function pathInvariant(path, predicate, message) {
   }
 }
 
-function handlePath(path) {
+function addQuotes(string) {
+  return `"${string}"`;
+}
+
+function handlePath(path, urlMap) {
   const callPath = path.parentPath;
   pathInvariant(path, types.isCallExpression(callPath), '`resolve` should be called like a function');
 
@@ -47,7 +29,7 @@ function handlePath(path) {
   const urlName = namePath.node.value;
   pathInvariant(namePath, urlMap.has(urlName), `A URL with name "${urlName}" was not found`);
 
-  const { params, quasis } = urlMap.get(urlName);
+  const { params, quasis, template } = urlMap.get(urlName);
   const expectedParamCount = params.length;
   const paramExpressions = [];
   const allParams = new Set(params);
@@ -58,28 +40,41 @@ function handlePath(path) {
       hadObjectParam = true;
 
       for (const propertyPath of paramPath.get('properties')) {
+        pathInvariant(propertyPath, !propertyPath.node.computed, 'Expected a non-computed identifier');
+        pathInvariant(propertyPath, !propertyPath.node.method, 'Expected a property that is not a method');
+
         const keyPath = propertyPath.get('key');
-        pathInvariant(keyPath, types.isIdentifier(keyPath), 'Expected a valid identifier');
+        pathInvariant(
+          propertyPath,
+          types.isIdentifier(keyPath),
+          `Expected an identifier as a property name, not a ${typeof keyPath.node.value}`,
+        );
 
         const { name } = keyPath.node;
         pathInvariant(
           keyPath,
           allParams.has(name),
-          `Unknown parameter, expected one of: ${[...allParams].join(', ')}`,
+          allParams.size === 0
+            ? commaListsOr`Unknown parameter "${name}", none were expected (in "${template}")`
+            : commaListsOr`Unknown parameter "${name}", expected one of: ${[...allParams].map(addQuotes)} (in "${template}")`,
         );
-        pathInvariant(keyPath, leftParams.has(name), 'Named parameter overrides the value from preceeding arguments');
+        pathInvariant(
+          keyPath,
+          leftParams.has(name),
+          `Named parameter "${name}" overrides the value from the preceeding arguments (in "${template}")`,
+        );
 
         paramExpressions[params.indexOf(name)] = propertyPath.get('value').node;
         leftParams.delete(name);
       }
     } else {
-      pathInvariant(paramPath, !hadObjectParam, 'No more parameters should appear after an object param');
+      pathInvariant(paramPath, !hadObjectParam, 'No more parameters should appear after an object parameter');
 
       const index = paramPath.key - 1;
       pathInvariant(
         paramPath,
         index < expectedParamCount,
-        `URL "${urlName}" accepts at most ${expectedParamCount} parameters; more were found`,
+        `URL "${urlName}" accepts at most ${expectedParamCount} parameters but more were found (in "${template}")`,
       );
 
       paramExpressions[index] = paramPath.node;
@@ -87,18 +82,47 @@ function handlePath(path) {
     }
   }
 
-  pathInvariant(callPath, leftParams.size === 0, `Missing values for parameters: ${[...leftParams].join(', ')}`);
+  pathInvariant(
+    callPath,
+    leftParams.size === 0,
+    commaLists`Missing values for parameters: ${[...leftParams].map(addQuotes)} (in "${template}")`,
+  );
 
   const urlTemplate = types.templateLiteral(quasis, paramExpressions);
   callPath.replaceWith(urlTemplate);
 }
 
-function resolve({ references, state, babel }) {
+const fileCache = new Map();
+
+function getQuasiFromString(string) {
+  return types.templateElement({ raw: string });
+}
+
+function processConfig(config) {
+  config.forEach(info => {
+    info.quasis = info.strings.map(getQuasiFromString);
+  });
+  return new Map(config.map(info => [info.name, info]));
+}
+
+function getUrlMap({ urlsPath }) {
+  if (!urlsPath) {
+    return new Map();
+  }
+  if (!fileCache.has(urlsPath)) {
+    const config = require(urlsPath);
+    const processedConfig = processConfig(config);
+    fileCache.set(urlsPath, processedConfig);
+  }
+  return fileCache.get(urlsPath);
+}
+
+function resolve({ references, state, babel, config = {} }) {
   if (!references || !references.default || references.default.length === 0) {
     return;
   }
-
-  references.default.forEach(path => handlePath(path));
+  const urlMap = getUrlMap(config);
+  references.default.forEach(path => handlePath(path, urlMap));
 }
 
-module.exports = createMacro(resolve);
+module.exports = createMacro(resolve, { configName: 'resolve' });
