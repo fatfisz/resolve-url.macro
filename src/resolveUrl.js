@@ -5,7 +5,8 @@ const fs = require('fs');
 const { createMacro } = require('babel-macros');
 const types = require('babel-types');
 const { commaLists, commaListsOr } = require('common-tags');
-const { getPartsFromTemplate } = require('./src/utils');
+
+const { getPartsFromTemplate } = require('./utils');
 
 function pathInvariant(path, predicate, message) {
   if (!predicate) {

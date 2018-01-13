@@ -1,19 +1,19 @@
 {
   "private": true,
-  "name": "facturlio",
+  "name": "resolve-url.macro",
   "description": "description",
   "keywords": [],
   "version": "0.0.1",
-  "main": "index.js",
+  "main": "src/resolveUrl.js",
   "files": [
-    "dummy"
+    "src"
   ],
-  "homepage": "https://github.com/fatfisz/facturlio",
-  "repository": "https://github.com/fatfisz/facturlio.git",
-  "author": {
-    "name": "FatFisz",
-    "url": "https://github.com/fatfisz"
-  },
+  "homepage": "https://github.com/fatfisz/resolve-url.macro",
+  "repository": "https://github.com/fatfisz/resolve-url.macro.git",
+  "author": "Rafał Ruciński (https://github.com/fatfisz)",
+  "contributors": [
+    "Tomasz Wesołowski (https://github.com/Kos)"
+  ],
   "license": "MIT",
   "engines": {
     "node": ">=8.0.0"
