@@ -1,3 +1,5 @@
+'use strict';
+
 function getPartsFromTemplate(template) {
   const partRegex = /\$\{(\w+)\}/g;
   const parts = template.split(partRegex);

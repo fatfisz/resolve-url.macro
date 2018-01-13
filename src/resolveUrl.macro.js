@@ -1,7 +1,5 @@
 'use strict';
 
-const fs = require('fs');
-
 const { createMacro } = require('babel-macros');
 const types = require('babel-types');
 const { commaLists, commaListsOr } = require('common-tags');
@@ -20,13 +18,21 @@ function addQuotes(string) {
 
 function handlePath(path, urlMap) {
   const callPath = path.parentPath;
-  pathInvariant(path, types.isCallExpression(callPath), '`resolve` should be called like a function');
+  pathInvariant(
+    path,
+    types.isCallExpression(callPath),
+    '`resolve` should be called like a function',
+  );
 
   const argsPath = callPath.get('arguments');
   pathInvariant(callPath, argsPath.length > 0, 'Missing the argument with URL name');
 
   const [namePath, ...paramPaths] = argsPath;
-  pathInvariant(namePath, types.isStringLiteral(namePath), 'The URL name should be a string literal');
+  pathInvariant(
+    namePath,
+    types.isStringLiteral(namePath),
+    'The URL name should be a string literal',
+  );
 
   const urlName = namePath.node.value;
   pathInvariant(namePath, urlMap.has(urlName), `A URL with name "${urlName}" was not found`);
@@ -42,8 +48,16 @@ function handlePath(path, urlMap) {
       hadObjectParam = true;
 
       for (const propertyPath of paramPath.get('properties')) {
-        pathInvariant(propertyPath, !propertyPath.node.computed, 'Expected a non-computed identifier');
-        pathInvariant(propertyPath, !propertyPath.node.method, 'Expected a property that is not a method');
+        pathInvariant(
+          propertyPath,
+          !propertyPath.node.computed,
+          'Expected a non-computed identifier',
+        );
+        pathInvariant(
+          propertyPath,
+          !propertyPath.node.method,
+          'Expected a property that is not a method',
+        );
 
         const keyPath = propertyPath.get('key');
         pathInvariant(
@@ -57,8 +71,10 @@ function handlePath(path, urlMap) {
           keyPath,
           allParams.has(name),
           allParams.size === 0
-            ? commaListsOr`Unknown parameter "${name}", none were expected (in "${template}")`
-            : commaListsOr`Unknown parameter "${name}", expected one of: ${[...allParams].map(addQuotes)} (in "${template}")`,
+            ? `Unknown parameter "${name}", none were expected (in "${template}")`
+            : commaListsOr`Unknown parameter "${name}", expected one of: ${[...allParams].map(
+                addQuotes,
+              )} (in "${template}")`,
         );
         pathInvariant(
           keyPath,
@@ -70,7 +86,11 @@ function handlePath(path, urlMap) {
         leftParams.delete(name);
       }
     } else {
-      pathInvariant(paramPath, !hadObjectParam, 'No more parameters should appear after an object parameter');
+      pathInvariant(
+        paramPath,
+        !hadObjectParam,
+        'No more parameters should appear after an object parameter',
+      );
 
       const index = paramPath.key - 1;
       pathInvariant(
@@ -122,7 +142,7 @@ function getUrlMap({ urlsPath }) {
   return fileCache.get(urlsPath);
 }
 
-function resolve({ references, state, babel, config = {} }) {
+function resolve({ references, config = {} }) {
   if (!references || !references.default || references.default.length === 0) {
     return;
   }

@@ -2,6 +2,6 @@
 
 module.exports = {
   resolve: {
-    urlsPath: './test/urls',
+    urlsPath: '../test/urls',
   },
 };

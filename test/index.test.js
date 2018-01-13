@@ -4,20 +4,24 @@ const { transform } = require('babel-core');
 const { stripIndent } = require('common-tags');
 const stripAnsi = require('strip-ansi');
 
+function wrapCode(code) {
+  return stripIndent`
+    const resolve = require('./src/resolveUrl.macro');
+    ${stripIndent([code])}
+  `;
+}
+
 function getTransformedCode(code) {
   const options = {
     filename: 'test.js',
     plugins: ['babel-macros'],
   };
-  return transform(code, options).code;
+  return transform(wrapCode(code), options).code;
 }
 
 function testBabelSucess(testName, code) {
   it(testName, () => {
-    const result = getTransformedCode(stripIndent`
-      const resolve = require('./resolve.macro');
-      ${stripIndent([code])}
-    `);
+    const result = getTransformedCode(code);
     expect(stripIndent([result])).toMatchSnapshot();
   });
 }
@@ -25,10 +29,7 @@ function testBabelSucess(testName, code) {
 function testBabelError(testName, code) {
   it(testName, () => {
     try {
-      getTransformedCode(stripIndent`
-        const resolve = require('./resolve.macro');
-        ${stripIndent([code])}
-      `);
+      getTransformedCode(code);
     } catch (error) {
       expect(`${error.message}\n\n${stripAnsi(error.codeFrame)}\n`).toMatchSnapshot();
       return;

@@ -4,7 +4,7 @@
   "description": "description",
   "keywords": [],
   "version": "0.0.1",
-  "main": "src/resolveUrl.js",
+  "main": "src/resolveUrl.macro.js",
   "files": [
     "src"
   ],
@@ -19,7 +19,11 @@
     "node": ">=8.0.0"
   },
   "scripts": {
-    "test": "jest"
+    "lint": "eslint --max-warnings 0 .*rc.js src",
+    "lint:fix": "yarn lint --fix",
+    "pretest": "yarn lint",
+    "test": "jest",
+    "test:update": "yarn test --updateSnapshot"
   },
   "dependencies": {
     "babel-macros": "^1.2.0",
@@ -27,8 +31,14 @@
     "common-tags": "^1.5.1"
   },
   "devDependencies": {
+    "@codility/eslint-config-codility": "^1.0.2",
     "babel-core": "^6.26.0",
+    "babel-eslint": "^8.2.1",
+    "eslint": "^4.15.0",
+    "eslint-config-prettier": "^2.9.0",
+    "eslint-plugin-prettier": "^2.4.0",
     "jest": "^22.0.3",
+    "prettier": "^1.10.2",
     "strip-ansi": "^4.0.0"
   }
 }
