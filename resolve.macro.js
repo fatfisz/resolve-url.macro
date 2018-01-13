@@ -5,6 +5,7 @@ const fs = require('fs');
 const { createMacro } = require('babel-macros');
 const types = require('babel-types');
 const { commaLists, commaListsOr } = require('common-tags');
+const { getPartsFromTemplate } = require('./src/utils');
 
 function pathInvariant(path, predicate, message) {
   if (!predicate) {
@@ -100,7 +101,10 @@ function getQuasiFromString(string) {
 
 function processConfig(config) {
   config.forEach(info => {
-    info.quasis = info.strings.map(getQuasiFromString);
+    const { strings, params } = getPartsFromTemplate(info.template);
+    info.params = params;
+    info.quasis = strings.map(getQuasiFromString);
+    info.strings = strings;
   });
   return new Map(config.map(info => [info.name, info]));
 }
