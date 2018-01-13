@@ -28,7 +28,7 @@ exports[`resolve errors while resolving should throw when a number property is p
 `;
 
 exports[`resolve errors while resolving should throw when a param is duplicated 1`] = `
-"test.js: ./src/resolveUrl.macro: Named parameter \\"third\\" overrides the value from the preceeding arguments (in \\"params/\${first}-\${second}/\${third}/\\")
+"test.js: ./src/resolveUrl.macro: Named parameter \\"third\\" overrides the value from the preceeding arguments (in \\"params/three/\${first}-\${second}/\${third}/\\")
 
   1 | const resolve = require('./src/resolveUrl.macro');
 > 2 | resolve('three-params', 'one', 'two', 'third', { third: three });
@@ -55,7 +55,7 @@ exports[`resolve errors while resolving should throw when an argument is passed 
 `;
 
 exports[`resolve errors while resolving should throw when an unknown param is passed (more params) 1`] = `
-"test.js: ./src/resolveUrl.macro: Unknown parameter \\"foobar\\", expected one of: \\"first\\", \\"second\\" or \\"third\\" (in \\"params/\${first}-\${second}/\${third}/\\")
+"test.js: ./src/resolveUrl.macro: Unknown parameter \\"foobar\\", expected one of: \\"first\\", \\"second\\" or \\"third\\" (in \\"params/three/\${first}-\${second}/\${third}/\\")
 
   1 | const resolve = require('./src/resolveUrl.macro');
 > 2 | resolve('three-params', 'one', 'two', { third: three, foobar: 42 });
@@ -64,7 +64,7 @@ exports[`resolve errors while resolving should throw when an unknown param is pa
 `;
 
 exports[`resolve errors while resolving should throw when an unknown param is passed 1`] = `
-"test.js: ./src/resolveUrl.macro: Unknown parameter \\"foobar\\", none were expected (in \\"params/zero\\")
+"test.js: ./src/resolveUrl.macro: Unknown parameter \\"foobar\\", none were expected (in \\"params/zero/\\")
 
   1 | const resolve = require('./src/resolveUrl.macro');
 > 2 | resolve('no-params', { foobar: 42 });
@@ -82,7 +82,7 @@ exports[`resolve errors while resolving should throw when the URL name is unknow
 `;
 
 exports[`resolve errors while resolving should throw when the number of params is greater than expected 1`] = `
-"test.js: ./src/resolveUrl.macro: URL \\"no-params\\" accepts at most 0 parameters but more were found (in \\"params/zero\\")
+"test.js: ./src/resolveUrl.macro: URL \\"no-params\\" accepts at most 0 parameters but more were found (in \\"params/zero/\\")
 
   1 | const resolve = require('./src/resolveUrl.macro');
 > 2 | resolve('no-params', 42);
@@ -91,7 +91,7 @@ exports[`resolve errors while resolving should throw when the number of params i
 `;
 
 exports[`resolve errors while resolving should throw when the number of params is greater than expected 2`] = `
-"test.js: ./src/resolveUrl.macro: URL \\"three-params\\" accepts at most 3 parameters but more were found (in \\"params/\${first}-\${second}/\${third}/\\")
+"test.js: ./src/resolveUrl.macro: URL \\"three-params\\" accepts at most 3 parameters but more were found (in \\"params/three/\${first}-\${second}/\${third}/\\")
 
   1 | const resolve = require('./src/resolveUrl.macro');
 > 2 | resolve('three-params', 'one', 'two', 'three', 'oops');
@@ -100,35 +100,13 @@ exports[`resolve errors while resolving should throw when the number of params i
 `;
 
 exports[`resolve errors while resolving should throw when the number of params is less than expected 1`] = `
-"test.js: ./src/resolveUrl.macro: Missing values for parameters: \\"second\\", \\"third\\" (in \\"params/\${first}-\${second}/\${third}/\\")
+"test.js: ./src/resolveUrl.macro: Missing values for parameters: \\"second\\", \\"third\\" (in \\"params/three/\${first}-\${second}/\${third}/\\")
 
   1 | const resolve = require('./src/resolveUrl.macro');
 > 2 | resolve('three-params', 42);
     | ^
 "
 `;
-
-exports[`resolve happy paths should resolve the URL with expressions as params 1`] = `"\`params/\${1 + 2}-\${'one' + 'two'}/\${(() => 'yo')()}/\`;"`;
-
-exports[`resolve happy paths should resolve the URL with identifiers as params 1`] = `"\`params/\${one}-\${two}/\${three}/\`;"`;
-
-exports[`resolve happy paths should resolve the URL with no params (empty named params object) 1`] = `"\`params/zero\`;"`;
-
-exports[`resolve happy paths should resolve the URL with no params 1`] = `"\`params/zero\`;"`;
-
-exports[`resolve happy paths should resolve the URL with numbers as params 1`] = `"\`params/\${1}-\${2}/\${3}/\`;"`;
-
-exports[`resolve happy paths should resolve the URL with partially named params (1 out of 3) 1`] = `"\`params/\${'one'}-\${'two'}/\${'three'}/\`;"`;
-
-exports[`resolve happy paths should resolve the URL with partially named params (2 out of 3) 1`] = `"\`params/\${'one'}-\${'two'}/\${'three'}/\`;"`;
-
-exports[`resolve happy paths should resolve the URL with partially named params (3 out of 3) 1`] = `"\`params/\${'one'}-\${'two'}/\${'three'}/\`;"`;
-
-exports[`resolve happy paths should resolve the URL with partially named params (expressions) 1`] = `"\`params/\${1 + 2}-\${'one' + 'two'}/\${(() => 'yo')()}/\`;"`;
-
-exports[`resolve happy paths should resolve the URL with strings as params 1`] = `"\`params/\${'one'}-\${'two'}/\${'three'}/\`;"`;
-
-exports[`resolve happy paths should resolve the URL with templates as params 1`] = `"\`params/\${\`\${1} + \${2}\`}-\${\`\${'one'} + \${'two'}\`}/\${\`\${(() => \`\${yo}\`)()}\`}/\`;"`;
 
 exports[`resolve invalid usage should throw when not used as a call (with property) 1`] = `
 "test.js: ./src/resolveUrl.macro: \`resolve\` should be called like a function

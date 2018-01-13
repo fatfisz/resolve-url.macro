@@ -19,10 +19,10 @@ function getTransformedCode(code) {
   return transform(wrapCode(code), options).code;
 }
 
-function testBabelSucess(testName, code) {
+function testBabelSucess(testName, code, expected) {
   it(testName, () => {
     const result = getTransformedCode(code);
-    expect(stripIndent([result])).toMatchSnapshot();
+    expect(stripIndent([result])).toBe(expected);
   });
 }
 
@@ -50,56 +50,70 @@ describe('resolve', () => {
   });
 
   describe('happy paths', () => {
-    testBabelSucess('should resolve the URL with no params', "resolve('no-params');");
+    testBabelSucess(
+      'should resolve the URL with no params',
+      "resolve('no-params');",
+      '`params/zero/`;',
+    );
 
     testBabelSucess(
       'should resolve the URL with no params (empty named params object)',
       "resolve('no-params', {});",
+      '`params/zero/`;',
     );
 
     testBabelSucess(
       'should resolve the URL with identifiers as params',
       "resolve('three-params', one, two, three);",
+      '`params/three/${one}-${two}/${three}/`;',
     );
 
     testBabelSucess(
       'should resolve the URL with strings as params',
       "resolve('three-params', 'one', 'two', 'three');",
+      "`params/three/${'one'}-${'two'}/${'three'}/`;",
     );
 
     testBabelSucess(
       'should resolve the URL with numbers as params',
       "resolve('three-params', 1, 2, 3);",
+      '`params/three/${1}-${2}/${3}/`;',
     );
 
     testBabelSucess(
       'should resolve the URL with expressions as params',
       "resolve('three-params', 1 + 2, 'one' + 'two', (() => 'yo')());",
+      "`params/three/${1 + 2}-${'one' + 'two'}/${(() => 'yo')()}/`;",
     );
 
     testBabelSucess(
       'should resolve the URL with templates as params',
       "resolve('three-params', `${1} + ${2}`, `${'one'} + ${'two'}`, `${(() => `${yo}`)()}`);",
+      "`params/three/${`${1} + ${2}`}-${`${'one'} + ${'two'}`}/${`${(() => `${yo}`)()}`}/`;",
     );
 
     testBabelSucess(
       'should resolve the URL with partially named params (1 out of 3)',
       "resolve('three-params', 'one', 'two', { third: 'three' });",
+      "`params/three/${'one'}-${'two'}/${'three'}/`;",
     );
 
     testBabelSucess(
       'should resolve the URL with partially named params (2 out of 3)',
       "resolve('three-params', 'one', { second: 'two', third: 'three' });",
+      "`params/three/${'one'}-${'two'}/${'three'}/`;",
     );
 
     testBabelSucess(
       'should resolve the URL with partially named params (3 out of 3)',
       "resolve('three-params', { second: 'two', third: 'three', first: 'one' });",
+      "`params/three/${'one'}-${'two'}/${'three'}/`;",
     );
 
     testBabelSucess(
       'should resolve the URL with partially named params (expressions)',
       "resolve('three-params', { second: 'one' + 'two', third: (() => 'yo')(), first: 1 + 2 });",
+      "`params/three/${1 + 2}-${'one' + 'two'}/${(() => 'yo')()}/`;",
     );
   });
 

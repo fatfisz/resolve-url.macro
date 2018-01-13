@@ -3,10 +3,10 @@
 module.exports = [
   {
     name: 'no-params',
-    template: 'params/zero',
+    template: 'params/zero/',
   },
   {
     name: 'three-params',
-    template: 'params/${first}-${second}/${third}/',
+    template: 'params/three/${first}-${second}/${third}/',
   },
 ];
