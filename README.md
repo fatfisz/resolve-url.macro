@@ -10,7 +10,7 @@ Thanks to that the URLs can be verified at the build time, and only used URLs wi
 
 ## Getting started
 
-First of all, you'll [Babel](https://github.com/babel/babel).
+First of all, you'll need [Babel](https://github.com/babel/babel).
 
 Then, install [babel-plugin-macros](https://github.com/kentcdodds/babel-plugin-macros) together with this package:
 ```shell
