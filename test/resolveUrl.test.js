@@ -6,7 +6,7 @@ const stripAnsi = require('strip-ansi');
 
 function wrapCode(code) {
   return stripIndent`
-    const resolve = require('./src/resolveUrl.macro');
+    const resolveUrl = require('./src/resolveUrl.macro');
     ${stripIndent([code])}
   `;
 }
@@ -38,141 +38,141 @@ function testBabelError(testName, code) {
   });
 }
 
-describe('resolve', () => {
+describe('resolveUrl', () => {
   describe('invalid usage', () => {
-    testBabelError('should throw when not used as a call', 'resolve;');
+    testBabelError('should throw when not used as a call', 'resolveUrl;');
 
-    testBabelError('should throw when not used as a call (with property)', 'resolve.something;');
+    testBabelError('should throw when not used as a call (with property)', 'resolveUrl.something;');
 
-    testBabelError('should throw when the params are missing', 'resolve();');
+    testBabelError('should throw when the params are missing', 'resolveUrl();');
 
-    testBabelError('should throw when the URL param is not a string', 'resolve(42);');
+    testBabelError('should throw when the URL param is not a string', 'resolveUrl(42);');
   });
 
   describe('happy paths', () => {
     testBabelSucess(
       'should resolve the URL with no params',
-      "resolve('no-params');",
+      "resolveUrl('no-params');",
       '`params/zero/`;',
     );
 
     testBabelSucess(
       'should resolve the URL with no params (empty named params object)',
-      "resolve('no-params', {});",
+      "resolveUrl('no-params', {});",
       '`params/zero/`;',
     );
 
     testBabelSucess(
       'should resolve the URL with identifiers as params',
-      "resolve('three-params', one, two, three);",
+      "resolveUrl('three-params', one, two, three);",
       '`params/three/${one}-${two}/${three}/`;',
     );
 
     testBabelSucess(
       'should resolve the URL with strings as params',
-      "resolve('three-params', 'one', 'two', 'three');",
+      "resolveUrl('three-params', 'one', 'two', 'three');",
       "`params/three/${'one'}-${'two'}/${'three'}/`;",
     );
 
     testBabelSucess(
       'should resolve the URL with numbers as params',
-      "resolve('three-params', 1, 2, 3);",
+      "resolveUrl('three-params', 1, 2, 3);",
       '`params/three/${1}-${2}/${3}/`;',
     );
 
     testBabelSucess(
       'should resolve the URL with expressions as params',
-      "resolve('three-params', 1 + 2, 'one' + 'two', (() => 'yo')());",
+      "resolveUrl('three-params', 1 + 2, 'one' + 'two', (() => 'yo')());",
       "`params/three/${1 + 2}-${'one' + 'two'}/${(() => 'yo')()}/`;",
     );
 
     testBabelSucess(
       'should resolve the URL with templates as params',
-      "resolve('three-params', `${1} + ${2}`, `${'one'} + ${'two'}`, `${(() => `${yo}`)()}`);",
+      "resolveUrl('three-params', `${1} + ${2}`, `${'one'} + ${'two'}`, `${(() => `${yo}`)()}`);",
       "`params/three/${`${1} + ${2}`}-${`${'one'} + ${'two'}`}/${`${(() => `${yo}`)()}`}/`;",
     );
 
     testBabelSucess(
       'should resolve the URL with partially named params (1 out of 3)',
-      "resolve('three-params', 'one', 'two', { third: 'three' });",
+      "resolveUrl('three-params', 'one', 'two', { third: 'three' });",
       "`params/three/${'one'}-${'two'}/${'three'}/`;",
     );
 
     testBabelSucess(
       'should resolve the URL with partially named params (2 out of 3)',
-      "resolve('three-params', 'one', { second: 'two', third: 'three' });",
+      "resolveUrl('three-params', 'one', { second: 'two', third: 'three' });",
       "`params/three/${'one'}-${'two'}/${'three'}/`;",
     );
 
     testBabelSucess(
       'should resolve the URL with partially named params (3 out of 3)',
-      "resolve('three-params', { second: 'two', third: 'three', first: 'one' });",
+      "resolveUrl('three-params', { second: 'two', third: 'three', first: 'one' });",
       "`params/three/${'one'}-${'two'}/${'three'}/`;",
     );
 
     testBabelSucess(
       'should resolve the URL with partially named params (expressions)',
-      "resolve('three-params', { second: 'one' + 'two', third: (() => 'yo')(), first: 1 + 2 });",
+      "resolveUrl('three-params', { second: 'one' + 'two', third: (() => 'yo')(), first: 1 + 2 });",
       "`params/three/${1 + 2}-${'one' + 'two'}/${(() => 'yo')()}/`;",
     );
   });
 
   describe('errors while resolving', () => {
-    testBabelError('should throw when the URL name is unknown', "resolve('dunno');");
+    testBabelError('should throw when the URL name is unknown', "resolveUrl('dunno');");
 
     testBabelError(
       'should throw when the number of params is greater than expected',
-      "resolve('no-params', 42);",
+      "resolveUrl('no-params', 42);",
     );
 
     testBabelError(
       'should throw when the number of params is greater than expected',
-      "resolve('three-params', 'one', 'two', 'three', 'oops');",
+      "resolveUrl('three-params', 'one', 'two', 'three', 'oops');",
     );
 
     testBabelError(
       'should throw when the number of params is less than expected',
-      "resolve('three-params', 42);",
+      "resolveUrl('three-params', 42);",
     );
 
     testBabelError(
       'should throw when an unknown param is passed',
-      "resolve('no-params', { foobar: 42 });",
+      "resolveUrl('no-params', { foobar: 42 });",
     );
 
     testBabelError(
       'should throw when an unknown param is passed (more params)',
-      "resolve('three-params', 'one', 'two', { third: three, foobar: 42 });",
+      "resolveUrl('three-params', 'one', 'two', { third: three, foobar: 42 });",
     );
 
     testBabelError(
       'should throw when a computed property is passed',
-      "resolve('three-params', 'one', 'two', { ['thi' + 'rd']: three });",
+      "resolveUrl('three-params', 'one', 'two', { ['thi' + 'rd']: three });",
     );
 
     testBabelError(
       'should throw when a number property is passed',
-      "resolve('three-params', 'one', 'two', { 3: three });",
+      "resolveUrl('three-params', 'one', 'two', { 3: three });",
     );
 
     testBabelError(
       'should throw when a string property is passed',
-      "resolve('three-params', 'one', 'two', { 'third': three });",
+      "resolveUrl('three-params', 'one', 'two', { 'third': three });",
     );
 
     testBabelError(
       'should throw when a method is passed',
-      "resolve('three-params', 'one', 'two', { third() {} });",
+      "resolveUrl('three-params', 'one', 'two', { third() {} });",
     );
 
     testBabelError(
       'should throw when a param is duplicated',
-      "resolve('three-params', 'one', 'two', 'third', { third: three });",
+      "resolveUrl('three-params', 'one', 'two', 'third', { third: three });",
     );
 
     testBabelError(
       'should throw when an argument is passed after an object argument',
-      "resolve('three-params', 'one', 'two', { third: three }, 'foobar');",
+      "resolveUrl('three-params', 'one', 'two', { third: three }, 'foobar');",
     );
   });
 });
