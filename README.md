@@ -77,4 +77,4 @@ After cloning the repo you'll have a few commands useful in development:
 
 ## License
 
-Copyright (c) 2017 Rafał Ruciński. Licensed under the MIT license.
+Copyright (c) 2018 Rafał Ruciński. Licensed under the MIT license.
