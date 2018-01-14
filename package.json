@@ -28,7 +28,7 @@
   "dependencies": {
     "babel-plugin-macros": "^2.0.0",
     "babel-types": "^6.26.0",
-    "common-tags": "^1.5.1"
+    "common-tags": "^1.7.2"
   },
   "devDependencies": {
     "@codility/eslint-config-codility": "^1.0.2",

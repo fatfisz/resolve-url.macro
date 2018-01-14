@@ -7,7 +7,7 @@ const stripAnsi = require('strip-ansi');
 function wrapCode(code) {
   return stripIndent`
     const resolveUrl = require('./src/resolveUrl.macro');
-    ${stripIndent([code])}
+    ${stripIndent(code)}
   `;
 }
 
@@ -22,7 +22,7 @@ function getTransformedCode(code) {
 function testBabelSucess(testName, code, expected) {
   it(testName, () => {
     const result = getTransformedCode(code);
-    expect(stripIndent([result])).toBe(expected);
+    expect(stripIndent(result)).toBe(expected);
   });
 }
 
