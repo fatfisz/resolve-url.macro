@@ -14,6 +14,8 @@ First of all, you'll [Babel](https://github.com/babel/babel).
 Then, install [babel-plugin-macros](https://github.com/kentcdodds/babel-plugin-macros) together with this package:
 ```shell
 yarn add -D resolve-url.macro babel-plugin-macros
+# or
+npm install -D resolve-url.macro babel-plugin-macros
 ```
 
 Finally, add a configuration file in the root of your project, called `.babel-plugin-macros.config.js`:
@@ -61,9 +63,36 @@ or a JSON file:
 ]
 ```
 
-As long as it can be `require`-d, anything goes.
+The parts of the URL wrapped in `${}` will be recognized as URL parameters.
 
 Such a file will most probably be produced by another tool (coming soon!).
+
+## Using in the code
+
+As with other macros built on `babel-plugin-macros`, you'll need to import the macro. After that just use it as a function:
+```js
+const resolveUrl = require('./src/resolveUrl.macro');
+
+$.post(resolveUrl('three-params', 2 + 2, -1, 'quick maths'), data, ...);
+```
+
+The URL will be inlined using the configuration and will turn into something like this:
+```js
+$.post(`params/three/${2 + 2}-${-1}-${'quick maths'}`, data, ...);
+```
+
+The number of parameters has to match the predefined URL template. Notice that the expressions are preserved and will be computed at runtime.
+
+### Using the object parameter
+
+It's also possible to pass an object as a parameter to the `resolveUrl` function. In that case property names have to match parameters from the URL template:
+```js
+const resolveUrl = require('./src/resolveUrl.macro');
+
+$.post(resolveUrl('three-params', 2 + 2, { third: 'quick maths', second: -1 }), data, ...);
+```
+
+In such a situation the object has to be the last argument.
 
 ## Info for contributors
 
