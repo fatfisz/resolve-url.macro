@@ -14,7 +14,7 @@ function wrapCode(code) {
 function getTransformedCode(code) {
   const options = {
     filename: 'test.js',
-    plugins: ['babel-macros'],
+    plugins: ['babel-plugin-macros'],
   };
   return transform(wrapCode(code), options).code;
 }

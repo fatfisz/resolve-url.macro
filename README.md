@@ -18,7 +18,7 @@ yarn add -D resolve-url.macro babel-plugin-macros
 npm install -D resolve-url.macro babel-plugin-macros
 ```
 
-Finally, add a configuration file in the root of your project, called `.babel-plugin-macros.config.js`:
+Finally, add a configuration file in the root of your project, called `babel-plugin-macros.config.js`:
 ```js
 module.exports = {
   resolve: {
