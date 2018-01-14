@@ -1,12 +1,17 @@
 {
-  "name": "resolve-url.macro",
-  "description": "description",
-  "keywords": [],
   "version": "0.0.1",
-  "main": "src/resolveUrl.macro.js",
-  "files": [
-    "src"
+  "name": "resolve-url.macro",
+  "description": "Resolve your URLs during build",
+  "keywords": [
+    "babel",
+    "build",
+    "macro",
+    "plugin",
+    "resolve",
+    "url"
   ],
+  "main": "src/resolveUrl.macro.js",
+  "files": ["src"],
   "homepage": "https://github.com/fatfisz/resolve-url.macro",
   "repository": "https://github.com/fatfisz/resolve-url.macro.git",
   "author": "Rafał Ruciński (https://github.com/fatfisz)",
