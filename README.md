@@ -1,10 +1,9 @@
 # resolve-url.macro
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/fatfisz/resolve-url.macro.svg)](https://greenkeeper.io/)
-
 > Resolve your URLs during build
 
 [![Build Status](https://travis-ci.org/fatfisz/resolve-url.macro.svg?branch=master)](https://travis-ci.org/fatfisz/resolve-url.macro)
+[![Greenkeeper badge](https://badges.greenkeeper.io/fatfisz/resolve-url.macro.svg)](https://greenkeeper.io/)
 
 This macro allows you to resolve the URLs from the back end (e.g. a Django app) in the client-side JS code.
 Thanks to that the URLs can be verified at the build time, and only used URLs will appear in the code.
