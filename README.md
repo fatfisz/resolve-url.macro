@@ -1,5 +1,7 @@
 # resolve-url.macro
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/fatfisz/resolve-url.macro.svg)](https://greenkeeper.io/)
+
 > Resolve your URLs during build
 
 [![Build Status](https://travis-ci.org/fatfisz/resolve-url.macro.svg?branch=master)](https://travis-ci.org/fatfisz/resolve-url.macro)
