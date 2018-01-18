@@ -117,7 +117,8 @@ function handlePath(path, urlMap) {
 const fileCache = new Map();
 
 function getQuasiFromString(string) {
-  return types.templateElement({ raw: string });
+  // HACK: For now leave raw and cooked the same until someone complains, there is no easy fix
+  return types.templateElement({ raw: string, cooked: string });
 }
 
 function processConfig(config) {
