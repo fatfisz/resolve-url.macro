@@ -72,7 +72,7 @@ Such a file will most probably be produced by another tool (coming soon!).
 
 As with other macros built on `babel-plugin-macros`, you'll need to import the macro. After that just use it as a function:
 ```js
-const resolveUrl = require('./src/resolveUrl.macro');
+const resolveUrl = require('resolve-url.macro');
 
 $.post(resolveUrl('three-params', 2 + 2, -1, 'quick maths'), data, ...);
 ```
@@ -88,7 +88,7 @@ The number of parameters has to match the predefined URL template. Notice that t
 
 It's also possible to pass an object as a parameter to the `resolveUrl` function. In that case property names have to match parameters from the URL template:
 ```js
-const resolveUrl = require('./src/resolveUrl.macro');
+const resolveUrl = require('resolve-url.macro');
 
 $.post(resolveUrl('three-params', 2 + 2, { third: 'quick maths', second: -1 }), data, ...);
 ```
