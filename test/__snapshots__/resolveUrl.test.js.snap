@@ -28,11 +28,11 @@ exports[`resolveUrl errors while resolving should throw when a number property i
 `;
 
 exports[`resolveUrl errors while resolving should throw when a param is duplicated 1`] = `
-"test.js: ./src/resolveUrl.macro: Named parameter \\"third\\" overrides the value from the preceeding arguments (in \\"params/three/\${first}-\${second}/\${third}/\\")
+"test.js: ./src/resolveUrl.macro: Named parameter \\"second\\" overrides the value from the preceeding arguments (in \\"params/three/\${first}-\${second}/\${third}/\\")
 
   1 | const resolveUrl = require('./src/resolveUrl.macro');
-> 2 | resolveUrl('three-params', 'one', 'two', 'third', { third: three });
-    |                                                     ^
+> 2 | resolveUrl('three-params', 'one', 'two', { second: three });
+    |                                            ^
 "
 `;
 
@@ -54,53 +54,71 @@ exports[`resolveUrl errors while resolving should throw when an argument is pass
 "
 `;
 
+exports[`resolveUrl errors while resolving should throw when an object argument is passed after an object argument 1`] = `
+"test.js: ./src/resolveUrl.macro: No more parameters should appear after an object parameter
+
+  1 | const resolveUrl = require('./src/resolveUrl.macro');
+> 2 | resolveUrl('three-params', 'one', 'two', { third: three }, {});
+    |                                                            ^
+"
+`;
+
 exports[`resolveUrl errors while resolving should throw when an unknown param is passed (more params) 1`] = `
 "test.js: ./src/resolveUrl.macro: Unknown parameter \\"foobar\\", expected one of: \\"first\\", \\"second\\" or \\"third\\" (in \\"params/three/\${first}-\${second}/\${third}/\\")
 
   1 | const resolveUrl = require('./src/resolveUrl.macro');
-> 2 | resolveUrl('three-params', 'one', 'two', { third: three, foobar: 42 });
-    |                                                          ^
+> 2 | resolveUrl('three-params', 'one', 'two', { foobar: 42 });
+    |                                            ^
 "
 `;
 
 exports[`resolveUrl errors while resolving should throw when an unknown param is passed 1`] = `
-"test.js: ./src/resolveUrl.macro: Unknown parameter \\"foobar\\", none were expected (in \\"params/zero/\\")
+"test.js: ./src/resolveUrl.macro: Unknown parameter \\"foobar\\", expected one of: \\"first\\" (in \\"params/one/\${first}/\\")
 
   1 | const resolveUrl = require('./src/resolveUrl.macro');
-> 2 | resolveUrl('no-params', { foobar: 42 });
+> 2 | resolveUrl('one-param', { foobar: 42 });
     |                           ^
 "
 `;
 
 exports[`resolveUrl errors while resolving should throw when the URL name is unknown 1`] = `
-"test.js: ./src/resolveUrl.macro: A URL with name \\"dunno\\" was not found
+"test.js: ./src/resolveUrl.macro: A URL with name \\"dunno\\" and arity 0 was not found
 
   1 | const resolveUrl = require('./src/resolveUrl.macro');
 > 2 | resolveUrl('dunno');
-    |            ^
+    | ^
+"
+`;
+
+exports[`resolveUrl errors while resolving should throw when the number of params is greater than expected (more params) 1`] = `
+"test.js: ./src/resolveUrl.macro: A URL with name \\"three-params\\" and arity 4 was not found
+
+  1 | const resolveUrl = require('./src/resolveUrl.macro');
+> 2 | resolveUrl('three-params', 'one', 'two', 'three', 'oops');
+    | ^
+"
+`;
+
+exports[`resolveUrl errors while resolving should throw when the number of params is greater than expected (named params) 1`] = `
+"test.js: ./src/resolveUrl.macro: A URL with name \\"three-params\\" and arity 4 was not found
+
+  1 | const resolveUrl = require('./src/resolveUrl.macro');
+> 2 | resolveUrl('three-params', 'one', 'two', { third: 3, oops: 4 });
+    | ^
 "
 `;
 
 exports[`resolveUrl errors while resolving should throw when the number of params is greater than expected 1`] = `
-"test.js: ./src/resolveUrl.macro: URL \\"no-params\\" accepts at most 0 parameters but more were found (in \\"params/zero/\\")
+"test.js: ./src/resolveUrl.macro: A URL with name \\"no-params\\" and arity 1 was not found
 
   1 | const resolveUrl = require('./src/resolveUrl.macro');
 > 2 | resolveUrl('no-params', 42);
-    |                         ^
-"
-`;
-
-exports[`resolveUrl errors while resolving should throw when the number of params is greater than expected 2`] = `
-"test.js: ./src/resolveUrl.macro: URL \\"three-params\\" accepts at most 3 parameters but more were found (in \\"params/three/\${first}-\${second}/\${third}/\\")
-
-  1 | const resolveUrl = require('./src/resolveUrl.macro');
-> 2 | resolveUrl('three-params', 'one', 'two', 'three', 'oops');
-    |                                                   ^
+    | ^
 "
 `;
 
 exports[`resolveUrl errors while resolving should throw when the number of params is less than expected 1`] = `
-"test.js: ./src/resolveUrl.macro: Missing values for parameters: \\"second\\", \\"third\\" (in \\"params/three/\${first}-\${second}/\${third}/\\")
+"test.js: ./src/resolveUrl.macro: A URL with name \\"three-params\\" and arity 1 was not found
 
   1 | const resolveUrl = require('./src/resolveUrl.macro');
 > 2 | resolveUrl('three-params', 42);

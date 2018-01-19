@@ -115,6 +115,18 @@ describe('resolveUrl', () => {
       "resolveUrl('three-params', { second: 'one' + 'two', third: (() => 'yo')(), first: 1 + 2 });",
       "`params/three/${1 + 2}-${'one' + 'two'}/${(() => 'yo')()}/`;",
     );
+
+    testBabelSucess(
+      'should resolve the URL with optional param not passed',
+      "resolveUrl('optional-param');",
+      '`params/optional/`;',
+    );
+
+    testBabelSucess(
+      'should resolve the URL with optional param passed',
+      "resolveUrl('optional-param', 'foobar');",
+      "`params/optional/${'foobar'}/`;",
+    );
   });
 
   describe('errors while resolving', () => {
@@ -126,8 +138,13 @@ describe('resolveUrl', () => {
     );
 
     testBabelError(
-      'should throw when the number of params is greater than expected',
+      'should throw when the number of params is greater than expected (more params)',
       "resolveUrl('three-params', 'one', 'two', 'three', 'oops');",
+    );
+
+    testBabelError(
+      'should throw when the number of params is greater than expected (named params)',
+      "resolveUrl('three-params', 'one', 'two', { third: 3, oops: 4 });",
     );
 
     testBabelError(
@@ -137,12 +154,12 @@ describe('resolveUrl', () => {
 
     testBabelError(
       'should throw when an unknown param is passed',
-      "resolveUrl('no-params', { foobar: 42 });",
+      "resolveUrl('one-param', { foobar: 42 });",
     );
 
     testBabelError(
       'should throw when an unknown param is passed (more params)',
-      "resolveUrl('three-params', 'one', 'two', { third: three, foobar: 42 });",
+      "resolveUrl('three-params', 'one', 'two', { foobar: 42 });",
     );
 
     testBabelError(
@@ -167,12 +184,17 @@ describe('resolveUrl', () => {
 
     testBabelError(
       'should throw when a param is duplicated',
-      "resolveUrl('three-params', 'one', 'two', 'third', { third: three });",
+      "resolveUrl('three-params', 'one', 'two', { second: three });",
     );
 
     testBabelError(
       'should throw when an argument is passed after an object argument',
       "resolveUrl('three-params', 'one', 'two', { third: three }, 'foobar');",
+    );
+
+    testBabelError(
+      'should throw when an object argument is passed after an object argument',
+      "resolveUrl('three-params', 'one', 'two', { third: three }, {});",
     );
   });
 });

@@ -2,7 +2,7 @@
 
 const { createMacro } = require('babel-plugin-macros');
 const types = require('babel-types');
-const { commaLists, commaListsOr } = require('common-tags');
+const { commaListsOr } = require('common-tags');
 
 const { getPartsFromTemplate } = require('./utils');
 
@@ -12,11 +12,11 @@ function pathInvariant(path, predicate, message) {
   }
 }
 
-function addQuotes(string) {
-  return `"${string}"`;
+function quotedStrings(strings) {
+  return [...strings].map(string => `"${string}"`);
 }
 
-function handlePath(path, urlMap) {
+function validateAndGetArguments(path) {
   const callPath = path.parentPath;
   pathInvariant(
     path,
@@ -34,16 +34,16 @@ function handlePath(path, urlMap) {
     'The URL name should be a string literal',
   );
 
-  const urlName = namePath.node.value;
-  pathInvariant(namePath, urlMap.has(urlName), `A URL with name "${urlName}" was not found`);
-
-  const { params, quasis, template } = urlMap.get(urlName);
-  const expectedParamCount = params.length;
-  const paramExpressions = [];
-  const allParams = new Set(params);
-  const leftParams = new Set(params);
+  const namedParamPaths = [];
   let hadObjectParam = false;
+
   for (const paramPath of paramPaths) {
+    pathInvariant(
+      paramPath,
+      !hadObjectParam,
+      'No more parameters should appear after an object parameter',
+    );
+
     if (types.isObjectExpression(paramPath)) {
       hadObjectParam = true;
 
@@ -66,52 +66,60 @@ function handlePath(path, urlMap) {
           `Expected an identifier as a property name, not a ${typeof keyPath.node.value}`,
         );
 
-        const { name } = keyPath.node;
-        pathInvariant(
-          keyPath,
-          allParams.has(name),
-          allParams.size === 0
-            ? `Unknown parameter "${name}", none were expected (in "${template}")`
-            : commaListsOr`Unknown parameter "${name}", expected one of: ${[...allParams].map(
-                addQuotes,
-              )} (in "${template}")`,
-        );
-        pathInvariant(
-          keyPath,
-          leftParams.has(name),
-          `Named parameter "${name}" overrides the value from the preceeding arguments (in "${template}")`,
-        );
-
-        paramExpressions[params.indexOf(name)] = propertyPath.get('value').node;
-        leftParams.delete(name);
+        namedParamPaths.push([keyPath, propertyPath.get('value')]);
       }
-    } else {
-      pathInvariant(
-        paramPath,
-        !hadObjectParam,
-        'No more parameters should appear after an object parameter',
-      );
-
-      const index = paramPath.key - 1;
-      pathInvariant(
-        paramPath,
-        index < expectedParamCount,
-        `URL "${urlName}" accepts at most ${expectedParamCount} parameters but more were found (in "${template}")`,
-      );
-
-      paramExpressions[index] = paramPath.node;
-      leftParams.delete(params[index]);
     }
   }
 
+  if (hadObjectParam) {
+    paramPaths.pop();
+  }
+
+  return [namePath.node.value, paramPaths, namedParamPaths];
+}
+
+function handlePath(path, urlMap) {
+  const [nameArg, paramPaths, namedParamPaths] = validateAndGetArguments(path);
+  const arity = paramPaths.length + namedParamPaths.length;
+  const urlName = getUrlName(nameArg, arity);
+
   pathInvariant(
-    callPath,
-    leftParams.size === 0,
-    commaLists`Missing values for parameters: ${[...leftParams].map(addQuotes)} (in "${template}")`,
+    path,
+    urlMap.has(urlName),
+    `A URL with name "${nameArg}" and arity ${arity} was not found`,
   );
 
+  const { params, quasis, template } = urlMap.get(urlName);
+  const paramExpressions = [];
+  const allParams = new Set(params);
+  const leftParams = new Set(params);
+
+  for (const paramPath of paramPaths) {
+    paramExpressions.push(paramPath.node);
+    leftParams.delete(params[paramPath.key - 1]);
+  }
+
+  for (const [keyPath, paramPath] of namedParamPaths) {
+    const { name } = keyPath.node;
+    pathInvariant(
+      keyPath,
+      allParams.has(name),
+      commaListsOr`
+        Unknown parameter "${name}", expected one of: ${quotedStrings(allParams)} (in "${template}")
+      `,
+    );
+    pathInvariant(
+      keyPath,
+      leftParams.has(name),
+      `Named parameter "${name}" overrides the value from the preceeding arguments (in "${template}")`,
+    );
+
+    paramExpressions[params.indexOf(name)] = paramPath.node;
+    leftParams.delete(name);
+  }
+
   const urlTemplate = types.templateLiteral(quasis, paramExpressions);
-  callPath.replaceWith(urlTemplate);
+  path.parentPath.replaceWith(urlTemplate);
 }
 
 const fileCache = new Map();
@@ -121,14 +129,18 @@ function getQuasiFromString(string) {
   return types.templateElement({ raw: string, cooked: string });
 }
 
+function getUrlName(name, arity) {
+  return `${name};${arity}`;
+}
+
 function processConfig(config) {
   config.forEach(info => {
     const { strings, params } = getPartsFromTemplate(info.template);
-    info.params = params;
     info.quasis = strings.map(getQuasiFromString);
-    info.strings = strings;
+    info.params = params;
+    info.arity = params.length;
   });
-  return new Map(config.map(info => [info.name, info]));
+  return new Map(config.map(info => [getUrlName(info.name, info.arity), info]));
 }
 
 function getUrlMap({ urlsPath }) {
