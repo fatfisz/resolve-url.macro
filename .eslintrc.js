@@ -1,15 +1,11 @@
 'use strict';
 
-const config = require('@codility/eslint-config-codility');
-
 module.exports = {
-  ...config,
+  extends: [require.resolve('../eslint-config-codility')],
+
   parserOptions: {
-    ...config.parserOptions,
     sourceType: 'script',
   },
-  plugins: config.plugins.filter(plugin => !plugin.includes('react')),
-  extends: config.extends.filter(config => !config.includes('react')),
 
   overrides: [
     {

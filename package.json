@@ -11,7 +11,9 @@
     "url"
   ],
   "main": "src/resolveUrl.macro.js",
-  "files": ["src"],
+  "files": [
+    "src"
+  ],
   "homepage": "https://github.com/fatfisz/resolve-url.macro",
   "repository": "https://github.com/fatfisz/resolve-url.macro.git",
   "author": "Rafał Ruciński (https://github.com/fatfisz)",
@@ -34,7 +36,7 @@
     "common-tags": "^1.7.2"
   },
   "devDependencies": {
-    "@codility/eslint-config-codility": "^1.0.2",
+    "@codility/eslint-config-codility": "^2.0.0",
     "babel-core": "^6.26.0",
     "babel-eslint": "^8.2.1",
     "babel-plugin-macros": "^2.0.0",
