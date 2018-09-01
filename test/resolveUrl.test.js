@@ -124,6 +124,12 @@ describe('resolveUrl', () => {
     );
 
     testBabelSucess(
+      'should resolve the URL with partially named params (object shorthand syntax)',
+      "resolveUrl('three-params', { first, second, third });",
+      '`params/three/${first}-${second}/${third}/`;',
+    );
+
+    testBabelSucess(
       'should resolve the URL with optional param not passed',
       "resolveUrl('optional-param');",
       '`params/optional/`;',
