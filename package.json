@@ -25,7 +25,7 @@
     "node": ">=8.0.0"
   },
   "scripts": {
-    "lint": "eslint --max-warnings 0 '.*rc.js' src test",
+    "lint": "eslint --max-warnings 0 .*rc.js src test",
     "lint:fix": "yarn lint --fix",
     "pretest": "yarn lint",
     "test": "jest",
