@@ -1,6 +1,6 @@
 'use strict';
 
-const { transform } = require('babel-core');
+const { transform } = require('@babel/core');
 const { stripIndent } = require('common-tags');
 const stripAnsi = require('strip-ansi');
 
@@ -26,12 +26,19 @@ function testBabelSucess(testName, code, expected) {
   });
 }
 
+function stripFiles(message) {
+  return message
+    .split(': ')
+    .slice(2)
+    .join(': ');
+}
+
 function testBabelError(testName, code) {
   it(testName, () => {
     try {
       getTransformedCode(code);
     } catch (error) {
-      expect(`${error.message}\n\n${stripAnsi(error.codeFrame)}\n`).toMatchSnapshot();
+      expect(`\n${stripFiles(stripAnsi(error.message))}\n`).toMatchSnapshot();
       return;
     }
     throw new Error('Expected an error, but none was thrown');

@@ -32,12 +32,12 @@
     "test:update": "yarn test --updateSnapshot"
   },
   "dependencies": {
-    "babel-types": "^6.26.0",
+    "@babel/types": "^7.0.0",
     "common-tags": "^1.8.0"
   },
   "devDependencies": {
+    "@babel/core": "7.0.0",
     "@codility/eslint-config-codility": "2.0.0",
-    "babel-core": "6.26.3",
     "babel-eslint": "9.0.0",
     "babel-plugin-macros": "2.4.0",
     "eslint": "5.5.0",

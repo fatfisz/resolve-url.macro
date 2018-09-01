@@ -1,8 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`resolveUrl errors while resolving should throw when a computed property is passed 1`] = `
-"test.js: ./src/resolveUrl.macro: Expected a non-computed identifier
-
+"
+Expected a non-computed identifier
   1 | const resolveUrl = require('./src/resolveUrl.macro');
 > 2 | resolveUrl('three-params', 'one', 'two', { ['thi' + 'rd']: three });
     |                                            ^
@@ -10,8 +10,8 @@ exports[`resolveUrl errors while resolving should throw when a computed property
 `;
 
 exports[`resolveUrl errors while resolving should throw when a method is passed 1`] = `
-"test.js: ./src/resolveUrl.macro: Expected a property that is not a method
-
+"
+Expected a property that is not a method
   1 | const resolveUrl = require('./src/resolveUrl.macro');
 > 2 | resolveUrl('three-params', 'one', 'two', { third() {} });
     |                                            ^
@@ -19,8 +19,8 @@ exports[`resolveUrl errors while resolving should throw when a method is passed 
 `;
 
 exports[`resolveUrl errors while resolving should throw when a number property is passed 1`] = `
-"test.js: ./src/resolveUrl.macro: Expected an identifier as a property name, not a number
-
+"
+Expected an identifier as a property name, not a number
   1 | const resolveUrl = require('./src/resolveUrl.macro');
 > 2 | resolveUrl('three-params', 'one', 'two', { 3: three });
     |                                            ^
@@ -28,8 +28,8 @@ exports[`resolveUrl errors while resolving should throw when a number property i
 `;
 
 exports[`resolveUrl errors while resolving should throw when a param is duplicated 1`] = `
-"test.js: ./src/resolveUrl.macro: Named parameter \\"second\\" overrides the value from the preceeding arguments (in \\"params/three/\${first}-\${second}/\${third}/\\")
-
+"
+Named parameter \\"second\\" overrides the value from the preceeding arguments (in \\"params/three/\${first}-\${second}/\${third}/\\")
   1 | const resolveUrl = require('./src/resolveUrl.macro');
 > 2 | resolveUrl('three-params', 'one', 'two', { second: three });
     |                                            ^
@@ -37,8 +37,8 @@ exports[`resolveUrl errors while resolving should throw when a param is duplicat
 `;
 
 exports[`resolveUrl errors while resolving should throw when a string property is passed 1`] = `
-"test.js: ./src/resolveUrl.macro: Expected an identifier as a property name, not a string
-
+"
+Expected an identifier as a property name, not a string
   1 | const resolveUrl = require('./src/resolveUrl.macro');
 > 2 | resolveUrl('three-params', 'one', 'two', { 'third': three });
     |                                            ^
@@ -46,8 +46,8 @@ exports[`resolveUrl errors while resolving should throw when a string property i
 `;
 
 exports[`resolveUrl errors while resolving should throw when an argument is passed after an object argument 1`] = `
-"test.js: ./src/resolveUrl.macro: No more parameters should appear after an object parameter
-
+"
+No more parameters should appear after an object parameter
   1 | const resolveUrl = require('./src/resolveUrl.macro');
 > 2 | resolveUrl('three-params', 'one', 'two', { third: three }, 'foobar');
     |                                                            ^
@@ -55,8 +55,8 @@ exports[`resolveUrl errors while resolving should throw when an argument is pass
 `;
 
 exports[`resolveUrl errors while resolving should throw when an object argument is passed after an object argument 1`] = `
-"test.js: ./src/resolveUrl.macro: No more parameters should appear after an object parameter
-
+"
+No more parameters should appear after an object parameter
   1 | const resolveUrl = require('./src/resolveUrl.macro');
 > 2 | resolveUrl('three-params', 'one', 'two', { third: three }, {});
     |                                                            ^
@@ -64,8 +64,8 @@ exports[`resolveUrl errors while resolving should throw when an object argument 
 `;
 
 exports[`resolveUrl errors while resolving should throw when an unknown param is passed (more params) 1`] = `
-"test.js: ./src/resolveUrl.macro: Unknown parameter \\"foobar\\", expected one of: \\"first\\", \\"second\\" or \\"third\\" (in \\"params/three/\${first}-\${second}/\${third}/\\")
-
+"
+Unknown parameter \\"foobar\\", expected one of: \\"first\\", \\"second\\" or \\"third\\" (in \\"params/three/\${first}-\${second}/\${third}/\\")
   1 | const resolveUrl = require('./src/resolveUrl.macro');
 > 2 | resolveUrl('three-params', 'one', 'two', { foobar: 42 });
     |                                            ^
@@ -73,8 +73,8 @@ exports[`resolveUrl errors while resolving should throw when an unknown param is
 `;
 
 exports[`resolveUrl errors while resolving should throw when an unknown param is passed 1`] = `
-"test.js: ./src/resolveUrl.macro: Unknown parameter \\"foobar\\", expected one of: \\"first\\" (in \\"params/one/\${first}/\\")
-
+"
+Unknown parameter \\"foobar\\", expected one of: \\"first\\" (in \\"params/one/\${first}/\\")
   1 | const resolveUrl = require('./src/resolveUrl.macro');
 > 2 | resolveUrl('one-param', { foobar: 42 });
     |                           ^
@@ -82,8 +82,8 @@ exports[`resolveUrl errors while resolving should throw when an unknown param is
 `;
 
 exports[`resolveUrl errors while resolving should throw when the URL name is unknown 1`] = `
-"test.js: ./src/resolveUrl.macro: A URL with name \\"dunno\\" and arity 0 was not found
-
+"
+A URL with name \\"dunno\\" and arity 0 was not found
   1 | const resolveUrl = require('./src/resolveUrl.macro');
 > 2 | resolveUrl('dunno');
     | ^
@@ -91,8 +91,8 @@ exports[`resolveUrl errors while resolving should throw when the URL name is unk
 `;
 
 exports[`resolveUrl errors while resolving should throw when the number of params is greater than expected (more params) 1`] = `
-"test.js: ./src/resolveUrl.macro: A URL with name \\"three-params\\" and arity 4 was not found
-
+"
+A URL with name \\"three-params\\" and arity 4 was not found
   1 | const resolveUrl = require('./src/resolveUrl.macro');
 > 2 | resolveUrl('three-params', 'one', 'two', 'three', 'oops');
     | ^
@@ -100,8 +100,8 @@ exports[`resolveUrl errors while resolving should throw when the number of param
 `;
 
 exports[`resolveUrl errors while resolving should throw when the number of params is greater than expected (named params) 1`] = `
-"test.js: ./src/resolveUrl.macro: A URL with name \\"three-params\\" and arity 4 was not found
-
+"
+A URL with name \\"three-params\\" and arity 4 was not found
   1 | const resolveUrl = require('./src/resolveUrl.macro');
 > 2 | resolveUrl('three-params', 'one', 'two', { third: 3, oops: 4 });
     | ^
@@ -109,8 +109,8 @@ exports[`resolveUrl errors while resolving should throw when the number of param
 `;
 
 exports[`resolveUrl errors while resolving should throw when the number of params is greater than expected 1`] = `
-"test.js: ./src/resolveUrl.macro: A URL with name \\"no-params\\" and arity 1 was not found
-
+"
+A URL with name \\"no-params\\" and arity 1 was not found
   1 | const resolveUrl = require('./src/resolveUrl.macro');
 > 2 | resolveUrl('no-params', 42);
     | ^
@@ -118,8 +118,8 @@ exports[`resolveUrl errors while resolving should throw when the number of param
 `;
 
 exports[`resolveUrl errors while resolving should throw when the number of params is less than expected 1`] = `
-"test.js: ./src/resolveUrl.macro: A URL with name \\"three-params\\" and arity 1 was not found
-
+"
+A URL with name \\"three-params\\" and arity 1 was not found
   1 | const resolveUrl = require('./src/resolveUrl.macro');
 > 2 | resolveUrl('three-params', 42);
     | ^
@@ -127,8 +127,8 @@ exports[`resolveUrl errors while resolving should throw when the number of param
 `;
 
 exports[`resolveUrl invalid usage should throw when not used as a call (with property) 1`] = `
-"test.js: ./src/resolveUrl.macro: \`resolve\` should be called like a function
-
+"
+\`resolve\` should be called like a function
   1 | const resolveUrl = require('./src/resolveUrl.macro');
 > 2 | resolveUrl.something;
     | ^
@@ -136,8 +136,8 @@ exports[`resolveUrl invalid usage should throw when not used as a call (with pro
 `;
 
 exports[`resolveUrl invalid usage should throw when not used as a call 1`] = `
-"test.js: ./src/resolveUrl.macro: \`resolve\` should be called like a function
-
+"
+\`resolve\` should be called like a function
   1 | const resolveUrl = require('./src/resolveUrl.macro');
 > 2 | resolveUrl;
     | ^
@@ -145,8 +145,8 @@ exports[`resolveUrl invalid usage should throw when not used as a call 1`] = `
 `;
 
 exports[`resolveUrl invalid usage should throw when the URL param is not a string 1`] = `
-"test.js: ./src/resolveUrl.macro: The URL name should be a string literal
-
+"
+The URL name should be a string literal
   1 | const resolveUrl = require('./src/resolveUrl.macro');
 > 2 | resolveUrl(42);
     |            ^
@@ -154,8 +154,8 @@ exports[`resolveUrl invalid usage should throw when the URL param is not a strin
 `;
 
 exports[`resolveUrl invalid usage should throw when the params are missing 1`] = `
-"test.js: ./src/resolveUrl.macro: Missing the argument with URL name
-
+"
+Missing the argument with URL name
   1 | const resolveUrl = require('./src/resolveUrl.macro');
 > 2 | resolveUrl();
     | ^

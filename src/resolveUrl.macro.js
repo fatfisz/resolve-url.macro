@@ -1,7 +1,7 @@
 'use strict';
 
+const types = require('@babel/types');
 const { createMacro } = require('babel-plugin-macros');
-const types = require('babel-types');
 const { commaListsOr } = require('common-tags');
 
 const { getPartsFromTemplate } = require('./utils');
