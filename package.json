@@ -33,18 +33,18 @@
   },
   "dependencies": {
     "babel-types": "^6.26.0",
-    "common-tags": "^1.7.2"
+    "common-tags": "^1.8.0"
   },
   "devDependencies": {
-    "@codility/eslint-config-codility": "^2.0.0",
-    "babel-core": "^6.26.0",
-    "babel-eslint": "^8.2.1",
-    "babel-plugin-macros": "^2.0.0",
-    "eslint": "^4.15.0",
-    "eslint-config-prettier": "^2.9.0",
-    "eslint-plugin-prettier": "^2.4.0",
-    "jest": "^22.0.3",
-    "prettier": "^1.10.2",
+    "@codility/eslint-config-codility": "2.0.0",
+    "babel-core": "6.26.3",
+    "babel-eslint": "9.0.0",
+    "babel-plugin-macros": "2.4.0",
+    "eslint": "5.5.0",
+    "eslint-config-prettier": "3.0.1",
+    "eslint-plugin-prettier": "2.6.2",
+    "jest": "23.5.0",
+    "prettier": "1.14.2",
     "strip-ansi": "^4.0.0"
   },
   "peerDependencies": {
