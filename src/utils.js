@@ -11,3 +11,9 @@ exports.getPartsFromTemplate = function getPartsFromTemplate(template) {
 exports.getUrlName = function getUrlName(name, arity) {
   return `${name};${arity}`;
 };
+
+exports.pathInvariant = function pathInvariant(path, predicate, message) {
+  if (!predicate) {
+    throw path.buildCodeFrameError(message);
+  }
+};
