@@ -12,7 +12,6 @@
   ],
   "main": "src/resolveUrl.macro.js",
   "files": [
-    "/index.js",
     "/src"
   ],
   "homepage": "https://github.com/fatfisz/resolve-url.macro",

@@ -1,6 +1,6 @@
 'use strict';
 
-const { getQueryString } = require('../index');
+const { getQueryString } = require('../src/runtime');
 
 describe('getQueryString', () => {
   it('should return empty string for no parameters', () => {
