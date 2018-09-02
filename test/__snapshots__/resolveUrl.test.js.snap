@@ -128,10 +128,10 @@ A URL with name \\"three-params\\" and arity 1 was not found
 
 exports[`resolveUrl invalid usage should throw when not used as a call (with property) 1`] = `
 "
-\`resolve\` should be called like a function
+Unknown property of \`resolve\` (only \`resolve.withQuery\` is supported)
   1 | const resolveUrl = require('./src/resolveUrl.macro');
 > 2 | resolveUrl.something;
-    | ^
+    |            ^
 "
 `;
 
@@ -159,5 +159,41 @@ Missing the argument with URL name
   1 | const resolveUrl = require('./src/resolveUrl.macro');
 > 2 | resolveUrl();
     | ^
+"
+`;
+
+exports[`resolveUrl.withQuery invalid usage should throw when not used as a call 1`] = `
+"
+\`resolve.withQuery\` should be called like a function
+  1 | const resolveUrl = require('./src/resolveUrl.macro');
+> 2 | resolveUrl.withQuery;
+    | ^
+"
+`;
+
+exports[`resolveUrl.withQuery invalid usage should throw when the URL param is not a string 1`] = `
+"
+The URL name should be a string literal
+  1 | const resolveUrl = require('./src/resolveUrl.macro');
+> 2 | resolveUrl.withQuery(42);
+    |                      ^
+"
+`;
+
+exports[`resolveUrl.withQuery invalid usage should throw when the params are missing 1`] = `
+"
+Missing the argument with URL name
+  1 | const resolveUrl = require('./src/resolveUrl.macro');
+> 2 | resolveUrl.withQuery();
+    | ^
+"
+`;
+
+exports[`resolveUrl.withQuery invalid usage should throw when the query argument is missing 1`] = `
+"
+The query argument is missing
+  1 | const resolveUrl = require('./src/resolveUrl.macro');
+> 2 | resolveUrl.withQuery('no-params');
+    |                      ^
 "
 `;

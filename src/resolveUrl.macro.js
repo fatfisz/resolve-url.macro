@@ -17,13 +17,32 @@ function quotedStrings(strings) {
   return [...strings].map(string => `"${string}"`);
 }
 
+function getCallPath(path) {
+  if (types.isCallExpression(path.parentPath.node)) {
+    return { callPath: path.parentPath };
+  }
+
+  if (types.isMemberExpression(path.parentPath.node)) {
+    pathInvariant(
+      path.parentPath.get('property'),
+      types.isIdentifier(path.parentPath.node.property, { name: 'withQuery' }),
+      'Unknown property of `resolve` (only `resolve.withQuery` is supported)',
+    );
+
+    pathInvariant(
+      path.parentPath,
+      types.isCallExpression(path.parentPath.parentPath.node),
+      '`resolve.withQuery` should be called like a function',
+    );
+
+    return { callPath: path.parentPath.parentPath, withQuery: true };
+  }
+
+  pathInvariant(path, false, '`resolve` should be called like a function');
+}
+
 function validateAndGetArguments(path) {
-  const callPath = path.parentPath;
-  pathInvariant(
-    path,
-    types.isCallExpression(callPath),
-    '`resolve` should be called like a function',
-  );
+  const { callPath, withQuery = false } = getCallPath(path);
 
   const argsPath = callPath.get('arguments');
   pathInvariant(callPath, argsPath.length > 0, 'Missing the argument with URL name');
@@ -31,9 +50,12 @@ function validateAndGetArguments(path) {
   const [namePath, ...paramPaths] = argsPath;
   pathInvariant(
     namePath,
-    types.isStringLiteral(namePath),
+    types.isStringLiteral(namePath.node),
     'The URL name should be a string literal',
   );
+
+  const queryParamPath = withQuery ? paramPaths.pop() : null;
+  pathInvariant(namePath, !withQuery || queryParamPath, 'The query argument is missing');
 
   const namedParamPaths = [];
   let hadObjectParam = false;
@@ -45,7 +67,7 @@ function validateAndGetArguments(path) {
       'No more parameters should appear after an object parameter',
     );
 
-    if (types.isObjectExpression(paramPath)) {
+    if (types.isObjectExpression(paramPath.node)) {
       hadObjectParam = true;
 
       for (const propertyPath of paramPath.get('properties')) {
@@ -63,7 +85,7 @@ function validateAndGetArguments(path) {
         const keyPath = propertyPath.get('key');
         pathInvariant(
           propertyPath,
-          types.isIdentifier(keyPath),
+          types.isIdentifier(keyPath.node),
           `Expected an identifier as a property name, not a ${typeof keyPath.node.value}`,
         );
 
@@ -76,11 +98,36 @@ function validateAndGetArguments(path) {
     paramPaths.pop();
   }
 
-  return [namePath.node.value, paramPaths, namedParamPaths];
+  return {
+    callPath,
+    nameArg: namePath.node.value,
+    paramPaths,
+    namedParamPaths,
+    queryParamPath,
+  };
 }
 
-function handlePath(path, urlMap) {
-  const [nameArg, paramPaths, namedParamPaths] = validateAndGetArguments(path);
+function getReplacementNode(path, quasis, paramExpressions, queryParamPath) {
+  const urlTemplateNode = types.templateLiteral(quasis, paramExpressions);
+
+  if (queryParamPath === null) {
+    return urlTemplateNode;
+  }
+
+  return types.callExpression(
+    types.memberExpression(path.node, types.identifier('getUrlWithQueryString')),
+    [urlTemplateNode, queryParamPath.node],
+  );
+}
+
+function handlePath(path, urlMap, state) {
+  const {
+    callPath,
+    nameArg,
+    paramPaths,
+    namedParamPaths,
+    queryParamPath,
+  } = validateAndGetArguments(path);
   const arity = paramPaths.length + namedParamPaths.length;
   const urlName = getUrlName(nameArg, arity);
 
@@ -119,16 +166,25 @@ function handlePath(path, urlMap) {
     leftParams.delete(name);
   }
 
-  const urlTemplate = types.templateLiteral(quasis, paramExpressions);
-  path.parentPath.replaceWith(urlTemplate);
+  const replacementNode = getReplacementNode(path, quasis, paramExpressions, queryParamPath);
+  callPath.replaceWith(replacementNode);
+
+  if (queryParamPath !== null) {
+    state.keepImports = true;
+  }
 }
 
 function resolve({ references, config = {} }) {
   if (!references || !references.default || references.default.length === 0) {
     return;
   }
+
   const urlMap = getUrlMap(config);
-  references.default.forEach(path => handlePath(path, urlMap));
+  const state = { keepImports: false };
+
+  references.default.forEach(path => handlePath(path, urlMap, state));
+
+  return state;
 }
 
 module.exports = createMacro(resolve, { configName: 'resolve' });

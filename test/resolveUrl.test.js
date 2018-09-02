@@ -22,7 +22,7 @@ function getTransformedCode(code) {
 function testBabelSucess(testName, code, expected) {
   it(testName, () => {
     const result = getTransformedCode(code);
-    expect(stripIndent(result)).toBe(expected);
+    expect(stripIndent(result)).toBe(stripIndent(expected));
   });
 }
 
@@ -208,6 +208,119 @@ describe('resolveUrl', () => {
     testBabelError(
       'should throw when an object argument is passed after an object argument',
       "resolveUrl('three-params', 'one', 'two', { third: three }, {});",
+    );
+  });
+});
+
+describe('resolveUrl.withQuery', () => {
+  describe('invalid usage', () => {
+    testBabelError('should throw when not used as a call', 'resolveUrl.withQuery;');
+
+    testBabelError('should throw when the params are missing', 'resolveUrl.withQuery();');
+
+    testBabelError('should throw when the URL param is not a string', 'resolveUrl.withQuery(42);');
+
+    testBabelError(
+      'should throw when the query argument is missing',
+      "resolveUrl.withQuery('no-params');",
+    );
+  });
+
+  describe('happy paths', () => {
+    testBabelSucess(
+      'should resolve the URL with no params',
+      "resolveUrl.withQuery('no-params', { foo: bar });",
+      `
+        const resolveUrl = require('./src/resolveUrl.macro');
+
+        resolveUrl.getUrlWithQueryString(\`params/zero/\`, {
+          foo: bar
+        });
+      `,
+    );
+
+    testBabelSucess(
+      'should resolve the URL with no params (empty named params object)',
+      "resolveUrl.withQuery('no-params', {}, { foo: bar });",
+      `
+        const resolveUrl = require('./src/resolveUrl.macro');
+
+        resolveUrl.getUrlWithQueryString(\`params/zero/\`, {
+          foo: bar
+        });
+      `,
+    );
+
+    testBabelSucess(
+      'should resolve the URL with params',
+      "resolveUrl.withQuery('three-params', 'one', 'two', 'three', { foo: bar });",
+      `
+        const resolveUrl = require('./src/resolveUrl.macro');
+
+        resolveUrl.getUrlWithQueryString(\`params/three/$\{'one'}-$\{'two'}/$\{'three'}/\`, {
+          foo: bar
+        });
+      `,
+    );
+
+    testBabelSucess(
+      'should resolve the URL with partially named params (1 out of 3)',
+      "resolveUrl.withQuery('three-params', 'one', 'two', { third: 'three' }, { foo: bar });",
+      `
+        const resolveUrl = require('./src/resolveUrl.macro');
+
+        resolveUrl.getUrlWithQueryString(\`params/three/$\{'one'}-$\{'two'}/$\{'three'}/\`, {
+          foo: bar
+        });
+      `,
+    );
+
+    testBabelSucess(
+      'should resolve the URL with partially named params (2 out of 3)',
+      "resolveUrl.withQuery('three-params', 'one', { second: 'two', third: 'three' }, { foo: bar });",
+      `
+        const resolveUrl = require('./src/resolveUrl.macro');
+
+        resolveUrl.getUrlWithQueryString(\`params/three/$\{'one'}-$\{'two'}/$\{'three'}/\`, {
+          foo: bar
+        });
+      `,
+    );
+
+    testBabelSucess(
+      'should resolve the URL with partially named params (3 out of 3)',
+      "resolveUrl.withQuery('three-params', { second: 'two', third: 'three', first: 'one' }, { foo: bar });",
+      `
+        const resolveUrl = require('./src/resolveUrl.macro');
+
+        resolveUrl.getUrlWithQueryString(\`params/three/$\{'one'}-$\{'two'}/$\{'three'}/\`, {
+          foo: bar
+        });
+      `,
+    );
+
+    testBabelSucess(
+      'should resolve the URL with optional param not passed',
+      "resolveUrl.withQuery('optional-param', { foo: bar });",
+      `
+        const resolveUrl = require('./src/resolveUrl.macro');
+
+        resolveUrl.getUrlWithQueryString(\`params/optional/\`, {
+          foo: bar
+        });
+      `,
+    );
+
+    testBabelSucess(
+      'should resolve the URL with optional param passed',
+      "resolveUrl.withQuery('optional-param', 'foobar', { foo: bar });",
+      `
+        const resolveUrl = require('./src/resolveUrl.macro');
+
+        resolveUrl.getUrlWithQueryString(\`params/optional/$\{'foobar'}/\`, {
+          foo: bar
+        });
+      `,
     );
   });
 });
