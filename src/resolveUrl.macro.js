@@ -4,7 +4,8 @@ const types = require('@babel/types');
 const { createMacro } = require('babel-plugin-macros');
 const { commaListsOr } = require('common-tags');
 
-const { getPartsFromTemplate } = require('./utils');
+const getUrlMap = require('./getUrlMap');
+const { getUrlName } = require('./utils');
 
 function pathInvariant(path, predicate, message) {
   if (!predicate) {
@@ -120,39 +121,6 @@ function handlePath(path, urlMap) {
 
   const urlTemplate = types.templateLiteral(quasis, paramExpressions);
   path.parentPath.replaceWith(urlTemplate);
-}
-
-const fileCache = new Map();
-
-function getQuasiFromString(string) {
-  // HACK: For now leave raw and cooked the same until someone complains, there is no easy fix
-  return types.templateElement({ raw: string, cooked: string });
-}
-
-function getUrlName(name, arity) {
-  return `${name};${arity}`;
-}
-
-function processConfig(config) {
-  config.forEach(info => {
-    const { strings, params } = getPartsFromTemplate(info.template);
-    info.quasis = strings.map(getQuasiFromString);
-    info.params = params;
-    info.arity = params.length;
-  });
-  return new Map(config.map(info => [getUrlName(info.name, info.arity), info]));
-}
-
-function getUrlMap({ urlsPath }) {
-  if (!urlsPath) {
-    return new Map();
-  }
-  if (!fileCache.has(urlsPath)) {
-    const config = require(urlsPath);
-    const processedConfig = processConfig(config);
-    fileCache.set(urlsPath, processedConfig);
-  }
-  return fileCache.get(urlsPath);
 }
 
 function resolve({ references, config = {} }) {

@@ -1,11 +1,13 @@
 'use strict';
 
-function getPartsFromTemplate(template) {
+exports.getPartsFromTemplate = function getPartsFromTemplate(template) {
   const partRegex = /\$\{(\w+)\}/g;
   const parts = template.split(partRegex);
   const strings = parts.filter((element, index) => index % 2 === 0);
   const params = parts.filter((element, index) => index % 2 === 1);
   return { strings, params };
-}
+};
 
-module.exports.getPartsFromTemplate = getPartsFromTemplate;
+exports.getUrlName = function getUrlName(name, arity) {
+  return `${name};${arity}`;
+};
