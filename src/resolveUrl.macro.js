@@ -5,6 +5,7 @@ const { createMacro } = require('babel-plugin-macros');
 const { commaListsOr } = require('common-tags');
 
 const getUrlMap = require('./getUrlMap');
+const replaceMacroPathWithRuntime = require('./replaceMacroPathWithRuntime');
 const { getUrlName, pathInvariant } = require('./utils');
 const validateAndGetArguments = require('./validateAndGetArguments');
 
@@ -74,8 +75,9 @@ function handlePath(path, urlMap, state) {
   const replacementNode = getReplacementNode(path, quasis, paramExpressions, queryParamPath);
   callPath.replaceWith(replacementNode);
 
-  if (queryParamPath !== null) {
-    state.keepImports = true;
+  if (queryParamPath !== null && !state.hasRuntime) {
+    replaceMacroPathWithRuntime(path);
+    state.hasRuntime = true;
   }
 }
 
@@ -85,11 +87,13 @@ function resolve({ references, config = {} }) {
   }
 
   const urlMap = getUrlMap(config);
-  const state = { keepImports: false };
+  const state = { hasRuntime: false };
 
   references.default.forEach(path => handlePath(path, urlMap, state));
 
-  return state;
+  return {
+    keepImports: state.hasRuntime,
+  };
 }
 
 module.exports = createMacro(resolve, { configName: 'resolve' });

@@ -4,26 +4,38 @@ const { transform } = require('@babel/core');
 const { stripIndent } = require('common-tags');
 const stripAnsi = require('strip-ansi');
 
-function wrapCode(code) {
+function wrapCode(code, useImport) {
+  if (useImport) {
+    return stripIndent`
+      import resolveUrl from './src/resolveUrl.macro';
+      ${stripIndent(code)}
+    `;
+  }
+
   return stripIndent`
     const resolveUrl = require('./src/resolveUrl.macro');
     ${stripIndent(code)}
   `;
 }
 
-function getTransformedCode(code) {
+function getTransformedCode(code, useImport) {
   const options = {
     filename: 'test.js',
     plugins: ['babel-plugin-macros'],
   };
-  return transform(wrapCode(code), options).code;
+  return transform(wrapCode(code, useImport), options).code;
 }
 
-function testBabelSucess(testName, code, expected) {
-  it(testName, () => {
-    const result = getTransformedCode(code);
-    expect(stripIndent(result)).toBe(stripIndent(expected));
-  });
+function testBabelSucess(testName, code, expected, expectedImport = expected) {
+  function test(useImport) {
+    it(useImport ? `${testName} (import version)` : testName, () => {
+      const result = getTransformedCode(code, useImport);
+      expect(stripIndent(result)).toBe(stripIndent(useImport ? expectedImport : expected));
+    });
+  }
+
+  test(false);
+  test(true);
 }
 
 function stripFiles(message) {
@@ -34,15 +46,20 @@ function stripFiles(message) {
 }
 
 function testBabelError(testName, code) {
-  it(testName, () => {
-    try {
-      getTransformedCode(code);
-    } catch (error) {
-      expect(`\n${stripFiles(stripAnsi(error.message))}\n`).toMatchSnapshot();
-      return;
-    }
-    throw new Error('Expected an error, but none was thrown');
-  });
+  function test(useImport) {
+    it(useImport ? `${testName} (import version)` : testName, () => {
+      try {
+        getTransformedCode(code, useImport);
+      } catch (error) {
+        expect(`\n${stripFiles(stripAnsi(error.message))}\n`).toMatchSnapshot();
+        return;
+      }
+      throw new Error('Expected an error, but none was thrown');
+    });
+  }
+
+  test(false);
+  test(true);
 }
 
 describe('resolveUrl', () => {
@@ -231,8 +248,41 @@ describe('resolveUrl.withQuery', () => {
       'should resolve the URL with no params',
       "resolveUrl.withQuery('no-params', { foo: bar });",
       `
-        const resolveUrl = require('./src/resolveUrl.macro');
+        const resolveUrl = require("./src/resolveUrl.macro/src/runtime");
 
+        resolveUrl.getUrlWithQueryString(\`params/zero/\`, {
+          foo: bar
+        });
+      `,
+      `
+        import resolveUrl from "./src/resolveUrl.macro/src/runtime";
+        resolveUrl.getUrlWithQueryString(\`params/zero/\`, {
+          foo: bar
+        });
+      `,
+    );
+
+    testBabelSucess(
+      'should work with multiple calls',
+      `
+        resolveUrl.withQuery('no-params', { foo: bar });
+        resolveUrl.withQuery('no-params', { foo: bar });
+      `,
+      `
+        const resolveUrl = require("./src/resolveUrl.macro/src/runtime");
+
+        resolveUrl.getUrlWithQueryString(\`params/zero/\`, {
+          foo: bar
+        });
+        resolveUrl.getUrlWithQueryString(\`params/zero/\`, {
+          foo: bar
+        });
+      `,
+      `
+        import resolveUrl from "./src/resolveUrl.macro/src/runtime";
+        resolveUrl.getUrlWithQueryString(\`params/zero/\`, {
+          foo: bar
+        });
         resolveUrl.getUrlWithQueryString(\`params/zero/\`, {
           foo: bar
         });
@@ -243,8 +293,14 @@ describe('resolveUrl.withQuery', () => {
       'should resolve the URL with no params (empty named params object)',
       "resolveUrl.withQuery('no-params', {}, { foo: bar });",
       `
-        const resolveUrl = require('./src/resolveUrl.macro');
+        const resolveUrl = require("./src/resolveUrl.macro/src/runtime");
 
+        resolveUrl.getUrlWithQueryString(\`params/zero/\`, {
+          foo: bar
+        });
+      `,
+      `
+        import resolveUrl from "./src/resolveUrl.macro/src/runtime";
         resolveUrl.getUrlWithQueryString(\`params/zero/\`, {
           foo: bar
         });
@@ -255,8 +311,14 @@ describe('resolveUrl.withQuery', () => {
       'should resolve the URL with params',
       "resolveUrl.withQuery('three-params', 'one', 'two', 'three', { foo: bar });",
       `
-        const resolveUrl = require('./src/resolveUrl.macro');
+        const resolveUrl = require("./src/resolveUrl.macro/src/runtime");
 
+        resolveUrl.getUrlWithQueryString(\`params/three/$\{'one'}-$\{'two'}/$\{'three'}/\`, {
+          foo: bar
+        });
+      `,
+      `
+        import resolveUrl from "./src/resolveUrl.macro/src/runtime";
         resolveUrl.getUrlWithQueryString(\`params/three/$\{'one'}-$\{'two'}/$\{'three'}/\`, {
           foo: bar
         });
@@ -267,8 +329,14 @@ describe('resolveUrl.withQuery', () => {
       'should resolve the URL with partially named params (1 out of 3)',
       "resolveUrl.withQuery('three-params', 'one', 'two', { third: 'three' }, { foo: bar });",
       `
-        const resolveUrl = require('./src/resolveUrl.macro');
+        const resolveUrl = require("./src/resolveUrl.macro/src/runtime");
 
+        resolveUrl.getUrlWithQueryString(\`params/three/$\{'one'}-$\{'two'}/$\{'three'}/\`, {
+          foo: bar
+        });
+      `,
+      `
+        import resolveUrl from "./src/resolveUrl.macro/src/runtime";
         resolveUrl.getUrlWithQueryString(\`params/three/$\{'one'}-$\{'two'}/$\{'three'}/\`, {
           foo: bar
         });
@@ -279,8 +347,14 @@ describe('resolveUrl.withQuery', () => {
       'should resolve the URL with partially named params (2 out of 3)',
       "resolveUrl.withQuery('three-params', 'one', { second: 'two', third: 'three' }, { foo: bar });",
       `
-        const resolveUrl = require('./src/resolveUrl.macro');
+        const resolveUrl = require("./src/resolveUrl.macro/src/runtime");
 
+        resolveUrl.getUrlWithQueryString(\`params/three/$\{'one'}-$\{'two'}/$\{'three'}/\`, {
+          foo: bar
+        });
+      `,
+      `
+        import resolveUrl from "./src/resolveUrl.macro/src/runtime";
         resolveUrl.getUrlWithQueryString(\`params/three/$\{'one'}-$\{'two'}/$\{'three'}/\`, {
           foo: bar
         });
@@ -291,8 +365,14 @@ describe('resolveUrl.withQuery', () => {
       'should resolve the URL with partially named params (3 out of 3)',
       "resolveUrl.withQuery('three-params', { second: 'two', third: 'three', first: 'one' }, { foo: bar });",
       `
-        const resolveUrl = require('./src/resolveUrl.macro');
+        const resolveUrl = require("./src/resolveUrl.macro/src/runtime");
 
+        resolveUrl.getUrlWithQueryString(\`params/three/$\{'one'}-$\{'two'}/$\{'three'}/\`, {
+          foo: bar
+        });
+      `,
+      `
+        import resolveUrl from "./src/resolveUrl.macro/src/runtime";
         resolveUrl.getUrlWithQueryString(\`params/three/$\{'one'}-$\{'two'}/$\{'three'}/\`, {
           foo: bar
         });
@@ -303,8 +383,14 @@ describe('resolveUrl.withQuery', () => {
       'should resolve the URL with optional param not passed',
       "resolveUrl.withQuery('optional-param', { foo: bar });",
       `
-        const resolveUrl = require('./src/resolveUrl.macro');
+        const resolveUrl = require("./src/resolveUrl.macro/src/runtime");
 
+        resolveUrl.getUrlWithQueryString(\`params/optional/\`, {
+          foo: bar
+        });
+      `,
+      `
+        import resolveUrl from "./src/resolveUrl.macro/src/runtime";
         resolveUrl.getUrlWithQueryString(\`params/optional/\`, {
           foo: bar
         });
@@ -315,8 +401,14 @@ describe('resolveUrl.withQuery', () => {
       'should resolve the URL with optional param passed',
       "resolveUrl.withQuery('optional-param', 'foobar', { foo: bar });",
       `
-        const resolveUrl = require('./src/resolveUrl.macro');
+        const resolveUrl = require("./src/resolveUrl.macro/src/runtime");
 
+        resolveUrl.getUrlWithQueryString(\`params/optional/$\{'foobar'}/\`, {
+          foo: bar
+        });
+      `,
+      `
+        import resolveUrl from "./src/resolveUrl.macro/src/runtime";
         resolveUrl.getUrlWithQueryString(\`params/optional/$\{'foobar'}/\`, {
           foo: bar
         });
