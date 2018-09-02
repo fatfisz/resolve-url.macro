@@ -72,25 +72,55 @@ Such a file will most probably be produced by another tool (coming soon!).
 
 As with other macros built on `babel-plugin-macros`, you'll need to import the macro. After that just use it as a function:
 ```js
-const resolveUrl = require('resolve-url.macro');
+import resolveUrl from 'resolve-url.macro';
 
-$.post(resolveUrl('three-params', 2 + 2, -1, 'quick maths'), data, ...);
+axios.post(resolveUrl('three-params', 2 + 2, -1, 'quick maths'), data);
 ```
 
-The URL will be inlined using the configuration and will turn into something like this:
+Under the hood the URL will be inlined using the configuration and will turn into something like this:
 ```js
-$.post(`params/three/${2 + 2}-${-1}-${'quick maths'}`, data, ...);
+axios.post(`params/three/${2 + 2}-${-1}-${'quick maths'}`, data);
 ```
 
 The number of parameters has to match the predefined URL template. Notice that the expressions are preserved and will be computed at runtime.
+
+### Passing query parameters
+
+A common pattern while working with URLs is the need to pass query parameters.
+You can do that easily with the mecro too, using the `withQuery` property:
+```js
+import resolveUrl from 'resolve-url.macro';
+
+axios.post(resolveUrl.withQuery('search', { sortBy: 'id' }), data);
+```
+
+The last argument will be used to build the query string.
+
+All properties of the query object will be properly escaped:
+```js
+// query object
+{ redirect_url: 'https://example.com/foobar' }
+
+// result
+'?redirect_url=https%3A%2F%2Fexample.com%2Ffoobar'
+```
+
+Null and undefined values will be ignored:
+```js
+// query object
+{ foo: null, bar: 42 }
+
+// result
+'?bar=42'
+```
 
 ### Using the object parameter
 
 It's also possible to pass an object as a parameter to the `resolveUrl` function. In that case property names have to match parameters from the URL template:
 ```js
-const resolveUrl = require('resolve-url.macro');
+import resolveUrl from 'resolve-url.macro';
 
-$.post(resolveUrl('three-params', 2 + 2, { third: 'quick maths', second: -1 }), data, ...);
+axios.get(resolveUrl('get-object', { userId, objectId }));
 ```
 
 In such a situation the object has to be the last argument.
