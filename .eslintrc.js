@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-  extends: [require.resolve('../eslint-config-codility')],
+  extends: ['@codility/eslint-config-codility'],
 
   parserOptions: {
     sourceType: 'script',
