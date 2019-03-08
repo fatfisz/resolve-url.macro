@@ -45,7 +45,7 @@
     "eslint-plugin-prettier": "2.6.2",
     "jest": "23.5.0",
     "prettier": "1.14.2",
-    "strip-ansi": "4.0.0"
+    "strip-ansi": "5.1.0"
   },
   "peerDependencies": {
     "babel-plugin-macros": "^2.0.0"
