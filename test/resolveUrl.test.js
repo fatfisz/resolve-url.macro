@@ -162,6 +162,8 @@ describe('resolveUrl', () => {
   describe('errors while resolving', () => {
     testBabelError('should throw when the URL name is unknown', "resolveUrl('dunno');");
 
+    testBabelError('should throw when the URL name is ignored', "resolveUrl('ignored');");
+
     testBabelError(
       'should throw when the number of params is greater than expected',
       "resolveUrl('no-params', 42);",

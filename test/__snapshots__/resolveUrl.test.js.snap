@@ -162,6 +162,24 @@ Unknown parameter \\"foobar\\", expected one of: \\"first\\" (in \\"params/one/\
 "
 `;
 
+exports[`resolveUrl errors while resolving should throw when the URL name is ignored (import version) 1`] = `
+"
+A URL with name \\"ignored\\" is marked as ignored
+  1 | import resolveUrl from './src/resolveUrl.macro';
+> 2 | resolveUrl('ignored');
+    | ^
+"
+`;
+
+exports[`resolveUrl errors while resolving should throw when the URL name is ignored 1`] = `
+"
+A URL with name \\"ignored\\" is marked as ignored
+  1 | const resolveUrl = require('./src/resolveUrl.macro');
+> 2 | resolveUrl('ignored');
+    | ^
+"
+`;
+
 exports[`resolveUrl errors while resolving should throw when the URL name is unknown (import version) 1`] = `
 "
 A URL with name \\"dunno\\" and arity 0 was not found

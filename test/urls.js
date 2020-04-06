@@ -21,4 +21,9 @@ module.exports = [
     name: 'optional-param',
     template: 'params/optional/${id}/',
   },
+  {
+    ignore: true,
+    name: 'ignored',
+    template: 'ignored/',
+  },
 ];

@@ -43,6 +43,12 @@ function handlePath(path, urlMap, state) {
     `A URL with name "${nameArg}" and arity ${arity} was not found`,
   );
 
+  pathInvariant(
+    path,
+    !urlMap.get(urlName).ignore,
+    `A URL with name "${nameArg}" is marked as ignored`,
+  );
+
   const { params, quasis, template } = urlMap.get(urlName);
   const paramExpressions = [];
   const allParams = new Set(params);
